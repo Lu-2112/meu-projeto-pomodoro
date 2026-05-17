@@ -1,0 +1,34 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-size: 62.5%; /* Garante que 1rem = 10px */
+}
+
+body {
+  background-color: #090e17; /* Forçando a cor escura de fundo */
+  color: #ffffff;            /* Forçando o texto a ficar branco */
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Centralizando e empilhando os itens do formulário */
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+/* O mesmo alinhamento para o conteúdo interno de cada "linha" */
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.4rem;
+}
