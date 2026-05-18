@@ -1,4 +1,31 @@
+/* src/styles/theme.css */
+
+/* 🌌 1. CORES PADRÃO (DARK MODE) */
 :root {
+  --gray-100: #0a0f1a;
+  --gray-200: #181f2e;
+  --gray-300: #272f43;
+  --gray-400: #363d56;
+  --gray-500: #454f6a;
+  --gray-600: #555f7d;
+  --gray-700: #aab3cc;
+  --gray-800: #cdd3e1;
+  --gray-900: #e6e9f0;
+
+  --text-default: #e6e9f0;
+  --text-muted: #aab3cc;
+
+  /* Cores dos links e botões verdes originais */
+  --link-color: #0b8a60;
+  --link-hover: #065f46;
+  
+  /* Garantindo que os componentes achem os tons verdes */
+  --primary: #0b8a60;
+  --primary-hover: #065f46;
+}
+
+/* ☀️ 2. CORES QUANDO FOR LIGHT MODE */
+:root[data-theme='light'] {
   --gray-100: #e6e9f0;
   --gray-200: #cdd3e1;
   --gray-300: #aab3cc;
@@ -9,29 +36,12 @@
   --gray-800: #181f2e;
   --gray-900: #0a0f1a;
 
-  --primary-light: #4de7b7;
-  --primary: #0da170;
-  --primary-dark: #065f46;
+  --text-default: #0a0f1a;
+  --text-muted: #454f6a;
 
-  --link-color: #10b981;
-  --link-hover: #0b8a60;
-
-  --success: #22c55e;
-  --warning: #eab308;
-  --error: #991b1b;
-  --info: #0ea5e9;
-
-  --text-over-primary: #0a0f1a;
-  --text-over-primary-dark: #e6e9f0;
-  --text-over-primary-light: #0a0f1a;
-  --text-over-success: #0a0f1a;
-  --text-over-warning: #0a0f1a;
-  --text-over-error: #e6e9f0;
-  --text-over-info: #0a0f1a;
-
-  --text-default: #e6e9f0;
-  --text-muted: #aab3cc;
-
-  --disabled: #555f7d;
-  --text-disabled: #aab3cc;
+  /* Mantemos os realces verdes acesos no modo claro também */
+  --link-color: #0b8a60;
+  --link-hover: #065f46;
+  --primary: #0b8a60;
+  --primary-hover: #065f46;
 }
