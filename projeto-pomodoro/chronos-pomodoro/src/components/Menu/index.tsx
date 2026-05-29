@@ -5,6 +5,7 @@ import {
   MoonIcon,
   SettingsIcon,
   SunIcon,
+  BookOpenIcon, 
 } from 'lucide-react';
 import styles from './styles.module.css';
 import { useState, useEffect } from 'react';
@@ -41,9 +42,10 @@ export function Menu() {
 
   return (
     <nav className={styles.menu}>
+     
       <RouterLink
         className={styles.menuLink}
-        href='/'
+        href='/home'
         aria-label='Ir para a Home'
         title='Ir para a Home'
       >
@@ -66,6 +68,15 @@ export function Menu() {
         title='Configurações'
       >
         <SettingsIcon />
+      </RouterLink>
+
+      <RouterLink
+        className={styles.menuLink}
+        href='/about'
+        aria-label='Entenda o Pomodoro'
+        title='Entenda o Pomodoro'
+      >
+        <BookOpenIcon />
       </RouterLink>
 
       <a
