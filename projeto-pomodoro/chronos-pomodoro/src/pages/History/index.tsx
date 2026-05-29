@@ -1,56 +1,66 @@
 // src/pages/History/index.tsx
-import { useEffect, useState } from 'react';
-import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
-import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
-import { MainTemplate } from '../../templates/MainTemplate';
-import { Container } from '../../components/Container';
-import { getTaskStatus } from '../../utils/getTaskStatus'; 
-import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
-import { showMessage } from '../../adapters/showMessage';
 import { TrashIcon } from 'lucide-react';
+import { Container } from '../../components/Container';
+import { DefaultButton } from '../../components/DefaultButton';
+import { Heading } from '../../components/Heading';
+import { MainTemplate } from '../../templates/MainTemplate';
 import styles from './styles.module.css';
+import { useContext, useEffect, useState } from 'react';
+import { TaskContext } from '../../contexts/TaskContext/TaskContext';
+import { formatDate } from '../../utils/formatDate';
+import { getTaskStatus } from '../../utils/getTaskStatus';
+import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
+import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
+import { showMessage } from '../../adapters/showMessage';
 
 export function History() {
-  const { state, dispatch } = useTaskContext();
-  
+  const taskContext = useContext(TaskContext) as any;
+  const state = taskContext?.state;
+  const dispatch = taskContext?.dispatch;
 
   const [confirmClearHistory, setConfirmClearHistory] = useState(false);
-  
-  const hasTasks = state.tasks.length > 0;
+  const hasTasks = state?.tasks ? state.tasks.length > 0 : false;
 
-  const [sortTasksOptions, setSortTaskOptions] = useState<SortTasksOptions>(
-    () => {
-      return {
-        tasks: sortTasks({ tasks: state.tasks }),
-        field: 'startDate',
-        direction: 'desc',
-      };
-    }
-  );
+  const [sortTasksOptions, setSortTaskOptions] = useState<SortTasksOptions>(() => {
+    return {
+      tasks: sortTasks({ tasks: state?.tasks || [] }),
+      field: 'startDate',
+      direction: 'desc',
+    };
+  });
 
  
   useEffect(() => {
-    setSortTaskOptions(prevState => ({
-      ...prevState,
-      tasks: sortTasks({
-        tasks: state.tasks,
-        direction: prevState.direction,
-        field: prevState.field,
-      }),
-    }));
-  }, [state.tasks]);
+    document.title = 'Histórico - Chronos Pomodoro';
+  }, []);
 
-  
   useEffect(() => {
-    if (!confirmClearHistory) return;
+    if (state?.tasks) {
+      setSortTaskOptions(prevState => ({
+        ...prevState,
+        tasks: sortTasks({
+          tasks: state.tasks,
+          direction: prevState.direction,
+          field: prevState.field,
+        }),
+      }));
+    }
+  }, [state?.tasks]);
 
-    setConfirmClearHistory(false); 
-    dispatch({ type: TaskActionTypes.RESET_STATE }); 
+  useEffect(() => {
+    if (!confirmClearHistory || !dispatch) return;
+    setConfirmClearHistory(false);
+    dispatch({ type: TaskActionTypes.RESET_STATE });
   }, [confirmClearHistory, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      showMessage.dismiss();
+    };
+  }, []);
 
   function handleSortTasks({ field }: Pick<SortTasksOptions, 'field'>) {
     const newDirection = sortTasksOptions.direction === 'desc' ? 'asc' : 'desc';
-
     setSortTaskOptions({
       tasks: sortTasks({
         direction: newDirection,
@@ -62,42 +72,33 @@ export function History() {
     });
   }
 
-  
   function handleResetHistory() {
-    showMessage.dismiss(); 
+    showMessage.dismiss();
     showMessage.confirm('Tem certeza?', confirmation => {
-      setConfirmClearHistory(confirmation); 
-    });
-  }
-
-  function formatDate(timestamp: number) {
-    return new Date(timestamp).toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      setConfirmClearHistory(confirmation);
     });
   }
 
   return (
     <MainTemplate>
       <Container>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2.4rem', color: 'var(--text-default)' }}>History</h1>
-          
+        <Heading>
+          <span>History</span>
           {hasTasks && (
-            <button 
-              className={styles.buttonContainer} 
-              onClick={handleResetHistory}
-              title="Apagar histórico"
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--red)' }}
-            >
-              <TrashIcon size={24} />
-            </button>
+            <span className={styles.buttonContainer}>
+              <DefaultButton
+                icon={<TrashIcon />}
+                color='red'
+                aria-label='Apagar todo o histórico'
+                title='Apagar histórico'
+                onClick={handleResetHistory}
+              />
+            </span>
           )}
-        </div>
+        </Heading>
+      </Container>
 
+      <Container>
         {hasTasks && (
           <div className={styles.responsiveTable}>
             <table>
@@ -117,19 +118,18 @@ export function History() {
                 </tr>
               </thead>
               <tbody>
-                {sortTasksOptions.tasks.map(task => {
-                  const taskTypeDictionary = {
+                {sortTasksOptions.tasks.map((task: any) => {
+                  const taskTypeDictionary: any = {
                     workTime: 'Foco',
                     shortBreakTime: 'Descanso curto',
                     longBreakTime: 'Descanso longo',
                   };
-
                   return (
                     <tr key={task.id}>
                       <td>{task.name}</td>
                       <td>{task.duration}min</td>
                       <td>{formatDate(task.startDate)}</td>
-                      <td>{getTaskStatus(task, state.activeTask)}</td>
+                      <td>{getTaskStatus(task, state?.activeTask)}</td>
                       <td>{taskTypeDictionary[task.type]}</td>
                     </tr>
                   );
@@ -138,9 +138,8 @@ export function History() {
             </table>
           </div>
         )}
-
         {!hasTasks && (
-          <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.8rem', color: 'var(--text-muted)', marginTop: '4rem' }}>
+          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
             Ainda não existem tarefas criadas.
           </p>
         )}
