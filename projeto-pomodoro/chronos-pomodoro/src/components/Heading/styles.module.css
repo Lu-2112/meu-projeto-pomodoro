@@ -1,30 +1,32 @@
+/* src/components/Heading/styles.module.css */
 .container {
-  background-color: var(--gray-800); /* Mudando para combinar com o novo tema */
+  background-color: var(--gray-800); 
   padding: 2rem;
   border-radius: 1.5rem;
   border: 1px solid var(--gray-700);
   margin-bottom: 2rem;
   
-  /* Flexbox para alinhar o conteúdo interno */
+ 
   display: flex;
-  flex-direction: column; /* Título em cima, subtítulo embaixo */
+  flex-direction: column; 
   align-items: center;
   gap: 1rem;
 }
 
-.title {
+
+.heading {
   color: var(--primary);
   font-size: 2.8rem;
   
-  /* Flexbox para o conteúdo DENTRO do H1 (Texto + Botão) */
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.6rem; /* Espaço de 16px entre o texto e o ícone */
+  gap: 1.6rem; 
 }
 
-/* Estilo para o botãozinho de ícone que o professor mencionou */
-.title button {
+
+.heading button {
   background: transparent;
   border: 1px solid var(--primary);
   color: var(--primary);
@@ -36,7 +38,8 @@
   transition: all 0.2s;
 }
 
-.title button:hover {
+
+.heading button:hover {
   background: var(--primary);
   color: var(--text-over-primary);
 }

@@ -1,3 +1,4 @@
+// src/contexts/TaskContext/TaskReducer.ts
 import { formatSecondsToMinutes } from '../../utils/formatSecondsToMinutes'; 
 import { TaskActionTypes, type TaskActionModel } from './TaskActions';
 import type { TaskStateModel } from '../../models/TaskStateModel';
@@ -15,18 +16,20 @@ export function taskReducer(state: TaskStateModel, action: TaskActionModel): Tas
     }
 
     case TaskActionTypes.INTERRUPT_TASK: {
+      if (!state.activeTask) return state;
+
+      // Cria o registro da tarefa interrompida com a data atual
+      const interruptedTask = {
+        ...state.activeTask,
+        interruptDate: Date.now(),
+      };
+
       return {
         ...state,
         activeTask: null,
         secondsRemaining: 0,
         formattedSecondsRemaining: '00:00',
-        tasks: state.tasks.map(task => {
-          const currentActive = state.activeTask as any;
-          if (currentActive && currentActive.id === task.id) {
-            return { ...task, interruptDate: Date.now() };
-          }
-          return task;
-        }),
+        tasks: [...state.tasks, interruptedTask], // 🚀 Adiciona a tarefa de verdade no histórico!
       };
     }
 
@@ -41,18 +44,20 @@ export function taskReducer(state: TaskStateModel, action: TaskActionModel): Tas
     }
 
     case TaskActionTypes.COMPLETE_TASK: {
+      if (!state.activeTask) return state;
+
+      // Cria o registro da tarefa completada com sucesso
+      const completedTask = {
+        ...state.activeTask,
+        completeDate: Date.now(),
+      };
+
       return {
         ...state,
         activeTask: null,
         secondsRemaining: 0,
         formattedSecondsRemaining: '00:00',
-        tasks: state.tasks.map(task => {
-          const currentActive = state.activeTask as any;
-          if (currentActive && currentActive.id === task.id) {
-            return { ...task, completeDate: Date.now() };
-          }
-          return task;
-        }),
+        tasks: [...state.tasks, completedTask], // 🚀 Adiciona a tarefa de verdade no histórico!
       };
     }
 
