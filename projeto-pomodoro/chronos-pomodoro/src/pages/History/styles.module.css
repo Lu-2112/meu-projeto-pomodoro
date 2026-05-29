@@ -1,4 +1,5 @@
 /* src/pages/History/styles.module.css */
+
 .buttonContainer button {
   min-width: auto;
   margin: 0;
@@ -35,4 +36,14 @@
   border-bottom: 0.2rem solid var(--gray-700);
   text-align: left;
   padding: 1.6rem;
+}
+
+
+.thSort {
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+.thSort:hover {
+  filter: brightness(120%); 
 }

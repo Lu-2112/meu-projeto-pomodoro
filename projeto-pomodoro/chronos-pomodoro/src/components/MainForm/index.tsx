@@ -16,7 +16,6 @@ export function MainForm() {
   const { state, dispatch } = useTaskContext();
   const taskNameInput = useRef<HTMLInputElement>(null);
   
-  // 🚀 PRÁTICA 66: Pega o nome da última tarefa criada no array (se existir)
   const lastTaskName = state.tasks[state.tasks.length - 1]?.name || '';
 
   function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
@@ -62,10 +61,10 @@ export function MainForm() {
           labelText='task'
           id='meuInput'
           type='text'
-          placeholder='Digite algo'
+          placeholder='Digite algo' 
           ref={taskNameInput}
           disabled={!!state.activeTask}
-          defaultValue={lastTaskName} // 🚀 PRÁTICA 66: Preenche o campo de forma não-controlada
+          defaultValue={lastTaskName} 
         />
       </div>
 

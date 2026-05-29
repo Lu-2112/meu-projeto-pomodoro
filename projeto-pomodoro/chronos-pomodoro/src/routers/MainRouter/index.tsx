@@ -10,7 +10,7 @@ import { PublicOnlyRoute } from '../../components/PublicOnlyRoute';
 export function MainRouter() {
   return (
     <Routes>
-      {/* Rota Pública Inicial */}
+  
       <Route
         path="/"
         element={
@@ -20,7 +20,7 @@ export function MainRouter() {
         }
       />
 
-      {/* Rota Protegida: Home */}
+    
       <Route
         path="/home"
         element={
@@ -30,7 +30,7 @@ export function MainRouter() {
         }
       />
 
-      {/* Rota Protegida: Histórico */}
+   
       <Route
         path="/history"
         element={
@@ -40,7 +40,7 @@ export function MainRouter() {
         }
       />
 
-      {/* 🛡️ MAPEANDO TODAS AS VARIANTES POSSÍVEIS PARA O ABOUT 🛡️ */}
+   
       <Route
         path="/about"
         element={
@@ -49,24 +49,12 @@ export function MainRouter() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/about-pomodoro"
-        element={
-          <ProtectedRoute>
-            <AboutPomodoro />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/aboutpomodoro"
-        element={
-          <ProtectedRoute>
-            <AboutPomodoro />
-          </ProtectedRoute>
-        }
-      />
 
-      {/* Rota de segurança padrão */}
+    
+      <Route path="/about-pomodoro" element={<Navigate to="/about" replace />} />
+      <Route path="/aboutpomodoro" element={<Navigate to="/about" replace />} />
+
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

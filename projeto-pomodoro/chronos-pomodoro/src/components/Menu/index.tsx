@@ -6,14 +6,18 @@ import {
   SettingsIcon,
   SunIcon,
   BookOpenIcon, 
+  LogOutIcon,
 } from 'lucide-react';
 import styles from './styles.module.css';
 import { useState, useEffect } from 'react';
 import { RouterLink } from '../RouterLink';
+import { useAuthContext } from '../../contexts/AuthContext'; 
 
 type AvailableThemes = 'dark' | 'light';
 
 export function Menu() {
+  const { logout } = useAuthContext();
+
   const [theme, setTheme] = useState<AvailableThemes>(() => {
     const storageTheme =
       (localStorage.getItem('theme') as AvailableThemes) || 'dark';
@@ -35,6 +39,14 @@ export function Menu() {
     });
   }
 
+ 
+  function handleLogout(
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) {
+    event.preventDefault();
+    logout(); 
+  }
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
@@ -42,7 +54,7 @@ export function Menu() {
 
   return (
     <nav className={styles.menu}>
-     
+      
       <RouterLink
         className={styles.menuLink}
         href='/home'
@@ -88,6 +100,18 @@ export function Menu() {
       >
         {nextThemeIcon[theme]}
       </a>
+
+    
+      <RouterLink
+        className={styles.menuLink}
+        href='/'
+        aria-label='Sair do sistema'
+        title='Sair'
+        onClick={handleLogout}
+      >
+        <LogOutIcon />
+      </RouterLink>
+
     </nav>
   );
 }

@@ -1,38 +1,63 @@
-// src/contexts/TaskContext/TaskReducer.ts
-import { formatSecondsToMinutes } from '../../utils/formatSecondsToMinutes'; 
-import { TaskActionTypes, type TaskActionModel } from './TaskActions';
+// src/contexts/TaskContext/taskReducer.ts
 import type { TaskStateModel } from '../../models/TaskStateModel';
+import { formatSecondsToMinutes } from '../../utils/formatSecondsToMinutes';
+import { getNextCycle } from '../../utils/getNextCycle';
+import { initialTaskState } from './initialTaskState';
+import { TaskActionTypes, type TaskActionModel } from './TaskActions';
 
-export function taskReducer(state: TaskStateModel, action: TaskActionModel): TaskStateModel {
+export function taskReducer(
+  state: TaskStateModel,
+  action: TaskActionModel,
+): TaskStateModel {
   switch (action.type) {
     case TaskActionTypes.START_TASK: {
+      const newTask = action.payload;
+      const nextCycle = getNextCycle(state.currentCycle);
+      const secondsRemaining = newTask.duration * 60;
+
       return {
         ...state,
-        activeTask: action.payload,
-        secondsRemaining: action.payload.duration * 60,
-        formattedSecondsRemaining: formatSecondsToMinutes(action.payload.duration * 60),
-        currentCycle: state.currentCycle + 1,
+        activeTask: newTask,
+        currentCycle: nextCycle,
+        secondsRemaining,
+        formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
+        tasks: [...state.tasks, newTask],
       };
     }
-
     case TaskActionTypes.INTERRUPT_TASK: {
-      if (!state.activeTask) return state;
-
-      // Cria o registro da tarefa interrompida com a data atual
-      const interruptedTask = {
-        ...state.activeTask,
-        interruptDate: Date.now(),
-      };
-
       return {
         ...state,
         activeTask: null,
         secondsRemaining: 0,
         formattedSecondsRemaining: '00:00',
-        tasks: [...state.tasks, interruptedTask], // 🚀 Adiciona a tarefa de verdade no histórico!
+        tasks: state.tasks.map(task => {
+          if (state.activeTask && state.activeTask.id === task.id) {
+            return { ...task, interruptDate: Date.now() };
+          }
+          return task;
+        }),
       };
     }
-
+    case TaskActionTypes.COMPLETE_TASK: {
+      return {
+        ...state,
+        activeTask: null,
+        secondsRemaining: 0,
+        formattedSecondsRemaining: '00:00',
+        tasks: state.tasks.map(task => {
+          if (state.activeTask && state.activeTask.id === task.id) {
+            return { ...task, completeDate: Date.now() };
+          }
+          return task;
+        }),
+      };
+    }
+    
+   
+    case TaskActionTypes.RESET_STATE: {
+      return { ...initialTaskState };
+    }
+    
     case TaskActionTypes.COUNT_DOWN: {
       return {
         ...state,
@@ -42,37 +67,7 @@ export function taskReducer(state: TaskStateModel, action: TaskActionModel): Tas
         ),
       };
     }
-
-    case TaskActionTypes.COMPLETE_TASK: {
-      if (!state.activeTask) return state;
-
-      // Cria o registro da tarefa completada com sucesso
-      const completedTask = {
-        ...state.activeTask,
-        completeDate: Date.now(),
-      };
-
-      return {
-        ...state,
-        activeTask: null,
-        secondsRemaining: 0,
-        formattedSecondsRemaining: '00:00',
-        tasks: [...state.tasks, completedTask], // 🚀 Adiciona a tarefa de verdade no histórico!
-      };
-    }
-
-    case TaskActionTypes.RESET_STATE: {
-      return {
-        ...state,
-        tasks: [],
-        activeTask: null,
-        secondsRemaining: 0,
-        formattedSecondsRemaining: '00:00',
-        currentCycle: 0,
-      };
-    }
-
-    default:
-      return state;
   }
+
+  return state;
 }
