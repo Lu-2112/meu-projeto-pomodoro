@@ -1,4 +1,3 @@
-// src/components/MainForm/index.tsx
 import { PlayCircleIcon, StopCircleIcon } from 'lucide-react';
 import { Cycles } from '../Cycles';
 import { DefaultButton } from '../DefaultButton';
@@ -11,14 +10,15 @@ import { getNextCycleType } from '../../utils/getNextCycleType';
 import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
 import { Tips } from '../Tips';
 import { showMessage } from '../../adapters/showMessage';
+import { api } from '../../services/api';
 
 export function MainForm() {
   const { state, dispatch } = useTaskContext();
   const taskNameInput = useRef<HTMLInputElement>(null);
-  
+
   const lastTaskName = state.tasks[state.tasks.length - 1]?.name || '';
 
-  function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
+  async function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     showMessage.dismiss();
 
@@ -44,12 +44,33 @@ export function MainForm() {
       type: nextCyleType,
     };
 
+    try {
+      await api.createTask({
+        id: newTask.id,
+        name: newTask.name,
+        duration: newTask.duration,
+        type: newTask.type,
+        startDate: newTask.startDate,
+      });
+    } catch {
+      showMessage.error('Erro ao salvar tarefa no servidor');
+    }
+
     dispatch({ type: TaskActionTypes.START_TASK, payload: newTask });
     showMessage.success('Tarefa iniciada');
   }
 
-  function handleInterruptTask() {
+  async function handleInterruptTask() {
     showMessage.dismiss();
+
+    if (state.activeTask) {
+      try {
+        await api.interruptTask(state.activeTask.id, Date.now());
+      } catch {
+        showMessage.error('Erro ao interromper tarefa no servidor');
+      }
+    }
+
     showMessage.error('Tarefa interrompida!');
     dispatch({ type: TaskActionTypes.INTERRUPT_TASK });
   }
@@ -61,10 +82,10 @@ export function MainForm() {
           labelText='task'
           id='meuInput'
           type='text'
-          placeholder='Digite algo' 
+          placeholder='Digite algo'
           ref={taskNameInput}
           disabled={!!state.activeTask}
-          defaultValue={lastTaskName} 
+          defaultValue={lastTaskName}
         />
       </div>
 

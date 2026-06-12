@@ -7,13 +7,13 @@ import { TimerWorkerManager } from '../../workers/TimerWorkerManager';
 import { TaskActionTypes } from './TaskActions';
 import { loadBeep } from '../../utils/loadBeep';
 import type { TaskStateModel } from '../../models/TaskStateModel';
+import { api } from '../../services/api';
 
 type TaskContextProviderProps = {
   children: React.ReactNode;
 };
 
 export function TaskContextProvider({ children }: TaskContextProviderProps) {
-  // 🚀 PRÁTICA 67: useReducer com Função Inicializadora (Lazy Init)
   const [state, dispatch] = useReducer(taskReducer, initialTaskState, () => {
     const storageState = localStorage.getItem('state');
 
@@ -22,7 +22,6 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
     try {
       const parsedStorageState = JSON.parse(storageState) as TaskStateModel;
 
-      
       return {
         ...parsedStorageState,
         activeTask: null,
@@ -30,13 +29,18 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
         formattedSecondsRemaining: '00:00',
       };
     } catch {
-     
       return initialTaskState;
     }
   });
 
   const playBeepRef = useRef<ReturnType<typeof loadBeep> | null>(null);
   const worker = TimerWorkerManager.getInstance();
+  const activeTaskRef = useRef(state.activeTask);
+
+  // Mantém a referência da activeTask atualizada
+  useEffect(() => {
+    activeTaskRef.current = state.activeTask;
+  }, [state.activeTask]);
 
   useEffect(() => {
     worker.onmessage(e => {
@@ -44,12 +48,18 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
 
       if (countDownSeconds <= 0) {
         if (playBeepRef.current) {
-          playBeepRef.current.play(); 
+          playBeepRef.current.play();
           playBeepRef.current = null;
         }
-        dispatch({
-          type: TaskActionTypes.COMPLETE_TASK,
-        });
+
+        // Marca task como completa na API
+        if (activeTaskRef.current) {
+          api.completeTask(activeTaskRef.current.id, Date.now()).catch(() => {
+            console.error('Erro ao completar task na API');
+          });
+        }
+
+        dispatch({ type: TaskActionTypes.COMPLETE_TASK });
         worker.terminate();
       } else {
         dispatch({
@@ -61,7 +71,6 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
   }, [worker]);
 
   useEffect(() => {
-   
     localStorage.setItem('state', JSON.stringify(state));
 
     if (!state.activeTask) {

@@ -1,4 +1,3 @@
-// src/pages/History/index.tsx
 import { TrashIcon } from 'lucide-react';
 import { Container } from '../../components/Container';
 import { DefaultButton } from '../../components/DefaultButton';
@@ -12,6 +11,7 @@ import { getTaskStatus } from '../../utils/getTaskStatus';
 import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
 import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
 import { showMessage } from '../../adapters/showMessage';
+import { api } from '../../services/api';
 
 export function History() {
   const taskContext = useContext(TaskContext) as any;
@@ -19,6 +19,7 @@ export function History() {
   const dispatch = taskContext?.dispatch;
 
   const [confirmClearHistory, setConfirmClearHistory] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const hasTasks = state?.tasks ? state.tasks.length > 0 : false;
 
   const [sortTasksOptions, setSortTaskOptions] = useState<SortTasksOptions>(() => {
@@ -29,9 +30,35 @@ export function History() {
     };
   });
 
- 
   useEffect(() => {
     document.title = 'Histórico - Chronos Pomodoro';
+  }, []);
+
+  // Carrega tasks da API ao abrir o histórico
+  useEffect(() => {
+    setIsLoadingHistory(true);
+    api.getTasks()
+      .then((tasks) => {
+        if (dispatch && tasks && tasks.length > 0) {
+          tasks.forEach((task: any) => {
+            dispatch({
+              type: TaskActionTypes.START_TASK,
+              payload: {
+                ...task,
+                startDate: Number(task.startDate),
+                completeDate: task.completeDate ? Number(task.completeDate) : null,
+                interruptDate: task.interruptDate ? Number(task.interruptDate) : null,
+              },
+            });
+          });
+        }
+      })
+      .catch(() => {
+        showMessage.error('Erro ao carregar histórico');
+      })
+      .finally(() => {
+        setIsLoadingHistory(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -50,7 +77,15 @@ export function History() {
   useEffect(() => {
     if (!confirmClearHistory || !dispatch) return;
     setConfirmClearHistory(false);
-    dispatch({ type: TaskActionTypes.RESET_STATE });
+
+    api.deleteTasks()
+      .then(() => {
+        dispatch({ type: TaskActionTypes.RESET_STATE });
+        showMessage.success('Histórico apagado!');
+      })
+      .catch(() => {
+        showMessage.error('Erro ao apagar histórico');
+      });
   }, [confirmClearHistory, dispatch]);
 
   useEffect(() => {
@@ -84,7 +119,7 @@ export function History() {
       <Container>
         <Heading>
           <span>History</span>
-          {hasTasks && (
+          {hasTasks && !isLoadingHistory && (
             <span className={styles.buttonContainer}>
               <DefaultButton
                 icon={<TrashIcon />}
@@ -99,7 +134,13 @@ export function History() {
       </Container>
 
       <Container>
-        {hasTasks && (
+        {isLoadingHistory && (
+          <p style={{ textAlign: 'center', color: '#8da2bb' }}>
+            Carregando histórico...
+          </p>
+        )}
+
+        {!isLoadingHistory && hasTasks && (
           <div className={styles.responsiveTable}>
             <table>
               <thead>
@@ -138,7 +179,8 @@ export function History() {
             </table>
           </div>
         )}
-        {!hasTasks && (
+
+        {!isLoadingHistory && !hasTasks && (
           <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
             Ainda não existem tarefas criadas.
           </p>
