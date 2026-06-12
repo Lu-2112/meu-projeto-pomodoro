@@ -9,8 +9,8 @@
 }
 
 body {
-  background-color: #090e17; /* Forçando a cor escura de fundo */
-  color: #ffffff;            /* Forçando o texto a ficar branco */
+  background-color: var(--gray-100); /* Forçando a cor escura de fundo */
+  color: var(--text-default);            /* Forçando o texto a ficar branco */
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
 }

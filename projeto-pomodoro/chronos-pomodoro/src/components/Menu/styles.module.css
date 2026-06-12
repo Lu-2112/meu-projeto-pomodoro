@@ -1,8 +1,11 @@
+/* src/components/Menu/styles.module.css */
+
 .menu {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.6rem;
+  margin-bottom: 2rem; 
 }
 
 .menuLink {
@@ -11,7 +14,7 @@
   justify-content: center;
   text-decoration: none;
   background: var(--primary);
-  /* A cor do ícone recebe a cor feita para contrastar com o primary */
+ 
   color: var(--text-over-primary);
   transition: all 0.1s ease-in-out;
   padding: 1.2rem;

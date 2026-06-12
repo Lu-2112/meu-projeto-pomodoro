@@ -1,25 +1,117 @@
-import { HistoryIcon, HouseIcon, SettingsIcon, SunIcon } from 'lucide-react';
+// src/components/Menu/index.tsx
+import {
+  HistoryIcon,
+  HouseIcon,
+  MoonIcon,
+  SettingsIcon,
+  SunIcon,
+  BookOpenIcon, 
+  LogOutIcon,
+} from 'lucide-react';
 import styles from './styles.module.css';
+import { useState, useEffect } from 'react';
+import { RouterLink } from '../RouterLink';
+import { useAuthContext } from '../../contexts/AuthContext'; 
+
+type AvailableThemes = 'dark' | 'light';
 
 export function Menu() {
+  const { logout } = useAuthContext();
+
+  const [theme, setTheme] = useState<AvailableThemes>(() => {
+    const storageTheme =
+      (localStorage.getItem('theme') as AvailableThemes) || 'dark';
+    return storageTheme;
+  });
+
+  const nextThemeIcon = {
+    dark: <SunIcon />,
+    light: <MoonIcon />,
+  };
+
+  function handleThemeChange(
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) {
+    event.preventDefault();
+    setTheme(prevTheme => {
+      const nextTheme = prevTheme === 'dark' ? 'light' : 'dark';
+      return nextTheme;
+    });
+  }
+
+ 
+  function handleLogout(
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) {
+    event.preventDefault();
+    logout(); 
+  }
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
   return (
     <nav className={styles.menu}>
-      {/* Futuramente, trocaremos a tag <a> por componentes de Link de um Router */}
-      <a className={styles.menuLink} href='#'>
+      
+      <RouterLink
+        className={styles.menuLink}
+        href='/home'
+        aria-label='Ir para a Home'
+        title='Ir para a Home'
+      >
         <HouseIcon />
-      </a>
+      </RouterLink>
 
-      <a className={styles.menuLink} href='#'>
+      <RouterLink
+        className={styles.menuLink}
+        href='/history'
+        aria-label='Ver Histórico'
+        title='Ver Histórico'
+      >
         <HistoryIcon />
-      </a>
+      </RouterLink>
 
-      <a className={styles.menuLink} href='#'>
+      <RouterLink
+        className={styles.menuLink}
+        href='/settings'
+        aria-label='Configurações'
+        title='Configurações'
+      >
         <SettingsIcon />
+      </RouterLink>
+
+      <RouterLink
+        className={styles.menuLink}
+        href='/about'
+        aria-label='Entenda o Pomodoro'
+        title='Entenda o Pomodoro'
+      >
+        <BookOpenIcon />
+      </RouterLink>
+
+      <a
+        className={styles.menuLink}
+        href='#'
+        aria-label='Mudar Tema'
+        title='Mudar Tema'
+        onClick={handleThemeChange}
+      >
+        {nextThemeIcon[theme]}
       </a>
 
-      <a className={styles.menuLink} href='#'>
-        <SunIcon />
-      </a>
+    
+      <RouterLink
+        className={styles.menuLink}
+        href='/'
+        aria-label='Sair do sistema'
+        title='Sair'
+        onClick={handleLogout}
+      >
+        <LogOutIcon />
+      </RouterLink>
+
     </nav>
   );
 }
