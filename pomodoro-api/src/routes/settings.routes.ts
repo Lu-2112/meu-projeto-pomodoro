@@ -1,14 +1,19 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 export const settingsRouter = Router();
 
-settingsRouter.get('/', async (_req, res) => {
-  let settings = await prisma.settings.findUnique({ where: { id: 1 } });
+settingsRouter.use(authMiddleware);
+
+settingsRouter.get('/', async (req, res) => {
+  const userId = (req as any).userId;
+
+  let settings = await prisma.settings.findUnique({ where: { userId } });
 
   if (!settings) {
     settings = await prisma.settings.create({
-      data: { id: 1, workTime: 25, shortBreakTime: 5, longBreakTime: 15 },
+      data: { userId, workTime: 25, shortBreakTime: 5, longBreakTime: 15 },
     });
   }
 
@@ -16,6 +21,8 @@ settingsRouter.get('/', async (_req, res) => {
 });
 
 settingsRouter.put('/', async (req, res) => {
+  const userId = (req as any).userId;
+
   const { workTime, shortBreakTime, longBreakTime } = req.body as {
     workTime: number;
     shortBreakTime: number;
@@ -31,9 +38,9 @@ settingsRouter.put('/', async (req, res) => {
   }
 
   const settings = await prisma.settings.upsert({
-    where: { id: 1 },
+    where: { userId },
     update: { workTime, shortBreakTime, longBreakTime },
-    create: { id: 1, workTime, shortBreakTime, longBreakTime },
+    create: { userId, workTime, shortBreakTime, longBreakTime },
   });
 
   return res.json(settings);
