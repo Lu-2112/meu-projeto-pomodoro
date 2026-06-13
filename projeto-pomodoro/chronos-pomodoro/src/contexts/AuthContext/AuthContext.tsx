@@ -1,11 +1,18 @@
-// src/contexts/AuthContext/AuthContext.tsx
 import { createContext } from 'react';
+
+export interface AuthUser {
+  id: number;
+  name: string;
+  email: string;
+}
 
 export interface AuthContextType {
   isAuthenticated: boolean;
-  login: (user: string, pass: string) => boolean;
+  loading: boolean;
+  user: AuthUser | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
-// Criamos o contexto vazio inicialmente
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
