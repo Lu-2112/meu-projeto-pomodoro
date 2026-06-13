@@ -1,22 +1,34 @@
-import React from 'react';
-import styles from './styles.module.css'; // <-- Vinculando o CSS Module
+// src/components/DefaultInput/index.tsx
+import { forwardRef } from 'react';
+import styles from './styles.module.css';
 
-type DefaultInputProps = {
+interface DefaultInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  labelText?: string;
   id: string;
-  labelText: string;
-} & React.ComponentProps<'input'>;
-
-export function DefaultInput({
-  id,
-  type,
-  labelText,
-  ...rest
-}: DefaultInputProps) {
-  return (
-    <>
-      <label htmlFor={id}>{labelText}</label>
-      {/* Aplicando a classe dinâmica gerada pelo CSS Module */}
-      <input className={styles.input} id={id} type={type} {...rest} />
-    </>
-  );
 }
+
+export const DefaultInput = forwardRef<HTMLInputElement, DefaultInputProps>(
+  ({ labelText, id, ...props }, ref) => {
+   
+    const shouldShowLabel = labelText && labelText !== 'task';
+
+    return (
+      <div className={styles.inputContainer}>
+        {shouldShowLabel && (
+          <label htmlFor={id} className={styles.label}>
+            {labelText}
+          </label>
+        )}
+        
+        <input
+          id={id}
+          ref={ref}
+          className={styles.input}
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+
+DefaultInput.displayName = 'DefaultInput';

@@ -33,3 +33,15 @@
   background-color: var(--error);
   color: var(--text-over-error);
 }
+
+.button.red {
+  background: transparent;
+  border: 1px solid #ef4444; 
+  color: #ef4444; 
+}
+
+
+.button.red:hover {
+  background: #ef4444;
+  color: #ffffff; 
+}

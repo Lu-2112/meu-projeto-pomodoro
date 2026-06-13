@@ -1,0 +1,101 @@
+/* src/pages/Login/styles.module.css */
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #0c111d; 
+  padding: 2rem;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px; 
+  background-color: #161e2e; 
+  padding: 3.5rem 3rem; 
+  border-radius: 16px; 
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  border: 1px solid #243249;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem; 
+}
+
+.logoArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2.25rem; 
+  font-weight: 700;
+  color: #10b981; 
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  color: #9ca3af;
+  font-size: 1rem; 
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; 
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.label {
+  font-size: 1rem; 
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem 1.25rem; 
+  background-color: #0c111d;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+.error {
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: -0.25rem;
+  font-weight: 500;
+}
+
+.button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #10b981; 
+  color: #0c111d;
+  font-weight: 700; 
+  font-size: 1.05rem; 
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.75rem;
+}
+
+.button:hover {
+  background-color: #059669;
+}
